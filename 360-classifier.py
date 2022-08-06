@@ -60,11 +60,11 @@ def train(input_data, output_data, model, hyper_parameter):
             y = output_data[random_index[j: j + hyper_parameter.bach_size]]
 
             optimizer.zero_grad()
-            output = model(x)
+            model_result = model(x)
             weight = model.weight
 
             # lagrange svm
-            loss = torch.clamp(1 - y * output.squeeze(), 0)
+            loss = torch.clamp(1 - y * model_result.squeeze(), 0)
             loss = torch.mean(loss)  # lagrange factor is means
             loss += hyper_parameter.discount * (weight.squeeze().t() @ weight.squeeze()) / 2.0
 
