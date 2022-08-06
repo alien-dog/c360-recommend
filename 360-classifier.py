@@ -54,26 +54,24 @@ def train(input_data, output_data, model, hyper_parameter):
     model.train()
     for i in range(hyper_parameter.epoch):
         random_index = torch.randperm(data_size)
-        sum_loss = 0
+
         for j in range(0, data_size, hyper_parameter.bach_size):
-            x = input_data[random_index[j: j + hyper_parameter.bach_size]]
-            y = output_data[random_index[j: j + hyper_parameter.bach_size]]
+            random_input = input_data[random_index[j: j + hyper_parameter.bach_size]]
+            random_output = output_data[random_index[j: j + hyper_parameter.bach_size]]
 
             optimizer.zero_grad()
-            model_result = model(x)
+            model_result = model(random_input)
             weight = model.weight
 
             # lagrange svm
-            loss = torch.clamp(1 - y * model_result.squeeze(), 0)
+            loss = torch.clamp(1 - random_output * model_result.squeeze(), 0)
             loss = torch.mean(loss)  # lagrange factor is means
             loss += hyper_parameter.discount * (weight.squeeze().t() @ weight.squeeze()) / 2.0
 
             loss.backward()
             optimizer.step()
 
-            sum_loss += float(loss)
-
-        print("times: {:4d}, loss: {}".format(i, sum_loss / data_size))
+            print("times: {:4d}, loss: {}".format(i, float(loss)))
 
 
 # model calculate
