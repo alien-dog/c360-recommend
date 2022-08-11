@@ -1,0 +1,32 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+
+customer_data = pd.read_csv("datasets/360_segments.csv")
+
+need_classifier_data = customer_data.drop(axis= 0, columns= ['CustomerID', 'Gender'])
+
+print(need_classifier_data.values)
+
+total_distance = []
+# 2 -> 20
+for i in range(2, 21):
+    kmeans = KMeans(n_clusters= i, random_state= 50)
+    kmeans.fit(need_classifier_data.values)
+    total_distance.append(kmeans.inertia_)
+
+plt.plot(range(2, 21), total_distance)
+plt.show()
+
+# best group num is ten
+kmeans = KMeans(n_clusters= 10, random_state= 50)
+group_ids = kmeans.fit_predict(need_classifier_data.values)
+
+print(group_ids)
+
+plt.scatter(need_classifier_data.values[group_ids == 0, 0], need_classifier_data.values[group_ids == 0, 1], c='green')
+plt.scatter(need_classifier_data.values[group_ids == 1, 0], need_classifier_data.values[group_ids == 1, 1], c='red')
+plt.scatter(need_classifier_data.values[group_ids == 2, 0], need_classifier_data.values[group_ids == 2, 1], c='yellow')
+plt.scatter(need_classifier_data.values[group_ids == 3, 0], need_classifier_data.values[group_ids == 3, 1], c='blue')
+
+plt.show()
